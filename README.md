@@ -1,17 +1,23 @@
 # kySwitcher — JSON helper (AutoHotkey v2)
 
-Этот репозиторий содержит простой модуль [JSON.ahk](JSON.ahk) для разбора (parse) и сериализации (dump) JSON в **AutoHotkey v2**.
+This repository contains a simple module [JSON.ahk](JSON.ahk) for parsing and serializing JSON in **AutoHotkey v2**.
 
-> В проекте модуль используется в [KeysHandler.ahk](KeysHandler.ahk) для загрузки правил из [data/schemes.json](data/schemes.json).
+> In the project, the module is used in [KeysHandler.ahk](KeysHandler.ahk) to load rules from [data/schemes.json](data/schemes.json).
 
-## Требования
+---
 
-- AutoHotkey **v2.0+** (см. `#Requires AutoHotkey v2.0` в [JSON.ahk](JSON.ahk)).
-- Для чтения файлов с JSON рекомендуется `FileRead(..., "UTF-8")`.
+🇷🇺 [Русская версия / Russian version](README_RU.md)
 
-## Быстрый старт
+---
 
-Подключите модуль и вызовите `JSON_Load`:
+## Requirements
+
+- AutoHotkey **v2.0+** (see `#Requires AutoHotkey v2.0` in [JSON.ahk](JSON.ahk)).
+- For reading JSON files, `FileRead(..., "UTF-8")` is recommended.
+
+## Quick Start
+
+Include the module and call `JSON_Load`:
 
 ```ahk
 #Requires AutoHotkey v2.0
@@ -26,7 +32,7 @@ MsgBox obj["b"][2]          ; ""  (null -> "")
 MsgBox obj["b"][3]          ; x
 ```
 
-Сериализация обратно в JSON:
+Serialize back to JSON:
 
 ```ahk
 #Requires AutoHotkey v2.0
@@ -36,8 +42,8 @@ m := Map("lang", "ru", "enabled", true)
 arr := [1, 2, 3]
 m["nums"] := arr
 
-jsonCompact := JSON_Dump(m)           ; компактно
-jsonPretty  := JSON_Dump(m, , 2)      ; pretty-print, 2 пробела
+jsonCompact := JSON_Dump(m)           ; compact
+jsonPretty  := JSON_Dump(m, , 2)      ; pretty-print, 2 spaces
 
 MsgBox jsonCompact
 MsgBox jsonPretty
@@ -47,71 +53,71 @@ MsgBox jsonPretty
 
 ### `JSON_Load(text, reviver := "")`
 
-Парсит строку JSON и возвращает:
+Parses a JSON string and returns:
 
 - JSON object → `Map()`
 - JSON array → `Array` (`[]`)
-- number → `Integer` или `Float`
+- number → `Integer` or `Float`
 - string → `String`
 - `true`/`false` → `true`/`false`
-- `null` → пустая строка `""`
+- `null` → empty string `""`
 
-Если JSON некорректный — бросает `Error(...)`.
+If the JSON is invalid, throws `Error(...)`.
 
 #### Reviver
 
-Опционально можно передать `reviver` как callable-объект (функцию), который будет вызван для каждого значения (аналог `JSON.parse(..., reviver)` в JS).
+Optionally, a `reviver` callable (function) can be passed. It will be called for every value (similar to `JSON.parse(..., reviver)` in JS).
 
-Ожидаемая сигнатура:
+Expected signature:
 
 ```ahk
 reviver(parent, key, value)
 ```
 
-- Возвращаемое значение:
-  - любое значение → будет записано обратно
-  - **не вернуть значение** (unset) → ключ будет удалён
+- Return value:
+  - any value → will be written back
+  - **no return** (unset) → the key will be deleted
 
-Пример: удалить все `null` (пустые строки) из результата:
+Example: remove all `null` (empty strings) from the result:
 
 ```ahk
 #Include "JSON.ahk"
 
 RemoveNull(parent, key, value) {
     if (value == "")
-        return  ; unset => удалит key
+        return  ; unset => removes the key
     return value
 }
 
 obj := JSON_Load('{"a":null,"b":1}', Func("RemoveNull"))
-; obj теперь содержит только b
+; obj now contains only b
 ```
 
 ### `JSON_Dump(value, replacer := "", space := "")`
 
-Сериализует значение AHK в JSON.
+Serializes an AHK value to JSON.
 
-Поддерживаются:
+Supported types:
 
 - `Map` → JSON object
 - `Array` → JSON array
 - `Number` → JSON number
 - `true`/`false`
 - `""` → `null`
-- остальные значения → строка (через `String(value)` + экранирование)
+- other values → string (via `String(value)` + escaping)
 
-Параметры:
+Parameters:
 
 - `space`:
-  - `""` (по умолчанию) → компактный JSON
-  - `Integer` → количество пробелов (максимум 10)
-  - `String` → строка отступа (берутся первые 10 символов)
+  - `""` (default) → compact JSON
+  - `Integer` → number of spaces (maximum 10)
+  - `String` → indent string (first 10 characters are used)
 - `replacer`:
-  - callable-объект (функция), вызывается на корневом значении (минимальная реализация в модуле).
+  - callable (function), called on the root value (minimal implementation in the module).
 
-## Формат данных в этом проекте
+## Data Format in This Project
 
-Файл [data/schemes.json](data/schemes.json) — это массив объектов, например:
+The file [data/schemes.json](data/schemes.json) is an array of objects, for example:
 
 ```json
 [
@@ -123,18 +129,18 @@ obj := JSON_Load('{"a":null,"b":1}', Func("RemoveNull"))
 ]
 ```
 
-В [KeysHandler.ahk](KeysHandler.ahk) этот JSON загружается так:
+In [KeysHandler.ahk](KeysHandler.ahk) this JSON is loaded as follows:
 
-- читается файл `schemes.json`
-- парсится через `JSON_Load`
-- перебираются `patterns`, и при совпадении вызывается `switchToEnglish()` / `switchToRussian()`
+- the `schemes.json` file is read
+- parsed via `JSON_Load`
+- `patterns` are iterated, and on match `switchToEnglish()` / `switchToRussian()` is called
 
-## Ограничения / заметки
+## Limitations / Notes
 
-- `null` преобразуется в `""` (пустую строку) и при `JSON_Dump("")` будет записан как `null`.
-- Модуль рассчитан на типичные JSON-данные (объекты/массивы/числа/строки/булевы/null).
-- В строках поддерживаются `\uXXXX` escape-последовательности (в пределах 4 hex цифр).
+- `null` is converted to `""` (empty string), and `JSON_Dump("")` will write it as `null`.
+- The module is designed for typical JSON data (objects/arrays/numbers/strings/booleans/null).
+- `\uXXXX` escape sequences are supported in strings (within 4 hex digits).
 
-## Лицензия
+## License
 
-Лицензия в репозитории не указана. Если нужно — скажите, какую предпочитаете (MIT/Apache-2.0 и т.п.), добавлю файл лицензии.
+No license is specified in the repository. If needed, let us know which one you prefer (MIT/Apache-2.0, etc.) and a license file will be added.
