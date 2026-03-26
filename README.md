@@ -27,7 +27,7 @@ text := '{"a": 1, "b": [true, null, "x"]}'
 obj := JSON_Load(text)
 
 MsgBox obj["a"]            ; 1
-MsgBox obj["b"][1]          ; true
+MsgBox obj["b"][1]          ; 1
 MsgBox obj["b"][2]          ; ""  (null -> "")
 MsgBox obj["b"][3]          ; x
 ```
