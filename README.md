@@ -115,25 +115,6 @@ Parameters:
 - `replacer`:
   - callable (function), called on the root value (minimal implementation in the module).
 
-## Data Format in This Project
-
-The file [data/schemes.json](data/schemes.json) is an array of objects, for example:
-
-```json
-[
-  {
-    "id": "1",
-    "patterns": ["cerf"],
-    "action": { "functionName": "switchToRussian" }
-  }
-]
-```
-
-In [KeysHandler.ahk](KeysHandler.ahk) this JSON is loaded as follows:
-
-- the `schemes.json` file is read
-- parsed via `JSON_Load`
-- `patterns` are iterated, and on match `switchToEnglish()` / `switchToRussian()` is called
 
 ## Limitations / Notes
 
